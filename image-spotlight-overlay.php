@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Image Spotlight Overlay Shorthand
  * Description: High-contrast image focus effect that brightens a custom rectangle and dims the background on hover using a shortcode.
- * Version: 1.2
+ * Version: 1.3
  * Author: AI Assistant
  */
 
@@ -34,7 +34,7 @@ function iso_enqueue_styles() {
         pointer-events: none; 
     }
     .custom-image-container:hover img {
-        filter: brightness(0.7);
+        filter: brightness(0.7); 
     }
     .custom-image-container:hover .target-highlight-area {
         opacity: 1;
@@ -80,101 +80,87 @@ add_shortcode( 'spotlight_image', 'iso_render_shortcode' );
 
 // 3. FORCE a custom "View details" link to display beneath the plugin name
 function iso_add_view_details_link( $plugin_meta, $plugin_file ) {
-    // Target only this exact plugin file path
     if ( strpos( $plugin_file, 'image-spotlight-overlay.php' ) !== false ) {
-        
-        // Build a secure admin link targeting our custom modal window slug
-        $url = network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=image-spotlight-overlay&TB_iframe=true&width=600&height=550' );
-        
-        // Construct the link with the core WordPress modal class "thickbox"
-        $link = sprintf( 
-            '<a href="%s" class="thickbox open-plugin-details-modal" aria-label="View details about this plugin">%s</a>', 
-            esc_url( $url ), 
-            esc_html__( 'View details' ) 
-        );
-        
+        // Targets an inline HTML div id instead of an external wordpress.org URL
+        $link = '<a href="#TB_inline?width=700&height=550&inlineId=iso-documentation-modal" class="thickbox" aria-label="View details about this plugin">View details</a>';
         $plugin_meta[] = $link;
     }
     return $plugin_meta;
 }
 add_filter( 'plugin_row_meta', 'iso_add_view_details_link', 10, 2 );
 
-// 4. Inject Documentation data into the modal window when triggered
-function iso_plugin_documentation_tabs( $false, $action, $args ) {
-    if ( isset( $args->slug ) && $args->slug === 'image-spotlight-overlay' ) {
-        
-        $obj = new stdClass();
-        $obj->name = 'Image Spotlight Overlay Shorthand';
-        $obj->slug = 'image-spotlight-overlay';
-        $obj->version = '1.2';
-        $obj->author = 'AI Assistant';
-        
-        $obj->sections = array(
-            'description' => '
+// 4. Inject a highly reliable inline HTML documentation container directly onto the admin page
+function iso_inject_inline_documentation() {
+    $screen = get_current_screen();
+    // Only load this data on the main plugins administration page to maximize performance
+    if ( isset( $screen->id ) && $screen->id === 'plugins' ) {
+        add_thickbox(); // Ensure core WordPress modal scripts are loaded
+        ?>
+        <div id="iso-documentation-modal" style="display:none;">
+            <div style="padding:20px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif; color:#3c434a; line-height:1.6;">
+                <h2 style="border-bottom:1px solid #ccc; padding-bottom:10px; margin-top:0;">Image Spotlight Overlay Shorthand — Documentation</h2>
+                
                 <h3>Welcome to Image Spotlight Overlay</h3>
-                <p>This lightweight plugin adds a dynamic highlight hover effect to your site without any configuration screens or heavy scripts. Simply drop the shortcode into any post or page to get started.</p>
+                <p>This lightweight plugin adds a dynamic highlight hover effect to your site without any configurations or heavy external scripts. Simply drop the shortcode into any post or page to get started.</p>
+                
                 <h4>How it works:</h4>
-                <ul>
+                <ul style="list-style-type:disc; padding-left:20px;">
                     <li>When the page loads, your target image appears perfectly normal.</li>
                     <li>When a visitor moves their cursor <strong>anywhere</strong> over the frame, the background layer dims down while your custom rectangle region brightens seamlessly.</li>
                 </ul>
-            ',
-            'installation_&_usage' => '
-                <h3>Quick Start Guide</h3>
+
+                <h3 style="margin-top:30px; border-bottom:1px solid #ccc; padding-bottom:5px;">Quick Start Guide</h3>
                 <p>To use this layout effect, paste the <code>[spotlight_image]</code> shortcode inside your standard WordPress paragraph blocks, shortcode widgets, or page builders.</p>
                 
                 <h4>Example Shortcode Structure:</h4>
-                <pre style="background:#f4f4f4; padding:10px; border-left:4px solid #0073aa; font-family:monospace; display:block; overflow-x:auto;">[spotlight_image src="https://yourwebsite.com" top="25%" left="40%" width="30%" height="20%"]</pre>
+                <pre style="background:#f4f4f4; padding:12px; border-left:4px solid #2271b1; font-family:monospace; display:block; overflow-x:auto; font-size:13px; color:#000;">[spotlight_image src="https://yourwebsite.com" top="25%" left="40%" width="30%" height="20%"]</pre>
                 
-                <h4 style="margin-top:20px;">Available Shortcode Properties:</h4>
-                <table class="widefat fixed" style="width:100%; text-align:left; border-collapse:collapse; margin-top:10px;">
+                <h4 style="margin-top:25px;">Available Shortcode Properties:</h4>
+                <table style="width:100%; text-align:left; border-collapse:collapse; margin-top:10px; font-size:13px;">
                     <thead>
-                        <tr style="background:#eee;">
-                            <th style="padding:8px; border:1px solid #ddd;">Attribute</th>
-                            <th style="padding:8px; border:1px solid #ddd;">Default Value</th>
-                            <th style="padding:8px; border:1px solid #ddd;">Description</th>
+                        <tr style="background:#eaeaea; border-bottom:2px solid #ccc;">
+                            <th style="padding:10px; border:1px solid #ddd; font-weight:600;">Attribute</th>
+                            <th style="padding:10px; border:1px solid #ddd; font-weight:600;">Default Value</th>
+                            <th style="padding:10px; border:1px solid #ddd; font-weight:600;">Description</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>src</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><em>(Required)</em></td>
-                            <td style="padding:8px; border:1px solid #ddd;">The full direct link address to your target file from the Media Library.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>src</code></td>
+                            <td style="padding:10px; border:1px solid #ddd; color:#d63638;"><em>(Required)</em></td>
+                            <td style="padding:10px; border:1px solid #ddd;">The full direct link address to your target file from the Media Library.</td>
                         </tr>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>top</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>30%</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;">Vertical offset placement measured from the top boundary of the picture container.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>top</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>30%</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;">Vertical offset placement measured from the top boundary of the picture container.</td>
                         </tr>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>left</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>45%</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;">Horizontal offset placement measured from the left boundary of the picture container.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>left</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>45%</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;">Horizontal offset placement measured from the left boundary of the picture container.</td>
                         </tr>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>width</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>20%</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;">The overall width scale sizing profile for your illuminated focus box.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>width</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>20%</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;">The overall width scale sizing profile for your illuminated focus box.</td>
                         </tr>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>height</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>15%</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;">The overall height scale sizing profile for your illuminated focus box.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>height</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>15%</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;">The overall height scale sizing profile for your illuminated focus box.</td>
                         </tr>
                         <tr>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>alt</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;"><code>Interactive Image</code></td>
-                            <td style="padding:8px; border:1px solid #ddd;">Optional accessibility descriptive alternative text string properties.</td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>alt</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;"><code>Interactive Image</code></td>
+                            <td style="padding:10px; border:1px solid #ddd;">Optional accessibility descriptive alternative text string properties.</td>
                         </tr>
                     </tbody>
                 </table>
-                <p style="margin-top:15px; font-style:italic;">Note: Always keep the percentage (%) symbols inside the tracking attributes to maintain structural responsive layouts across diverse screen sizes.</p>
-            '
-        );
-        
-        return $obj;
+                <p style="margin-top:20px; font-style:italic; font-size:12px; color:#646970;">Note: Always keep the percentage (%) symbols inside the tracking attributes to maintain structural responsive layouts across diverse screen sizes.</p>
+            </div>
+        </div>
+        <?php
     }
-    return $false;
 }
-add_filter( 'plugins_api', 'iso_plugin_documentation_tabs', 10, 3 );
-
+add_action( 'admin_footer', 'iso_inject_inline_documentation' );

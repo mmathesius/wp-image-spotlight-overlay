@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Image Spotlight Overlay Shorthand
  * Description: High-contrast image focus effect that brightens a custom rectangle and dims the background on hover using a shortcode.
- * Version: 1.3
+ * Version: 1.4
  * Author: AI Assistant
  */
 
@@ -33,13 +33,15 @@ function iso_enqueue_styles() {
         transition: all 0.4s ease;
         pointer-events: none; 
     }
+    /* TWEAK 1: Fades the main background image down to 0.5 (50% brightness) */
     .custom-image-container:hover img {
-        filter: brightness(0.7); 
+        filter: brightness(0.5); 
     }
+    /* TWEAK 2: Boosts the highlight rectangle area up to 2.0 (200% brightness) */
     .custom-image-container:hover .target-highlight-area {
         opacity: 1;
-        backdrop-filter: brightness(1.3);
-        -webkit-backdrop-filter: brightness(1.3);
+        backdrop-filter: brightness(2.0);
+        -webkit-backdrop-filter: brightness(2.0);
     }
     </style>
     <?php
@@ -81,7 +83,6 @@ add_shortcode( 'spotlight_image', 'iso_render_shortcode' );
 // 3. FORCE a custom "View details" link to display beneath the plugin name
 function iso_add_view_details_link( $plugin_meta, $plugin_file ) {
     if ( strpos( $plugin_file, 'image-spotlight-overlay.php' ) !== false ) {
-        // Targets an inline HTML div id instead of an external wordpress.org URL
         $link = '<a href="#TB_inline?width=700&height=550&inlineId=iso-documentation-modal" class="thickbox" aria-label="View details about this plugin">View details</a>';
         $plugin_meta[] = $link;
     }
@@ -92,9 +93,8 @@ add_filter( 'plugin_row_meta', 'iso_add_view_details_link', 10, 2 );
 // 4. Inject a highly reliable inline HTML documentation container directly onto the admin page
 function iso_inject_inline_documentation() {
     $screen = get_current_screen();
-    // Only load this data on the main plugins administration page to maximize performance
     if ( isset( $screen->id ) && $screen->id === 'plugins' ) {
-        add_thickbox(); // Ensure core WordPress modal scripts are loaded
+        add_thickbox(); 
         ?>
         <div id="iso-documentation-modal" style="display:none;">
             <div style="padding:20px; font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen-Sans,Ubuntu,Cantarell,'Helvetica Neue',sans-serif; color:#3c434a; line-height:1.6;">
@@ -106,7 +106,7 @@ function iso_inject_inline_documentation() {
                 <h4>How it works:</h4>
                 <ul style="list-style-type:disc; padding-left:20px;">
                     <li>When the page loads, your target image appears perfectly normal.</li>
-                    <li>When a visitor moves their cursor <strong>anywhere</strong> over the frame, the background layer dims down while your custom rectangle region brightens seamlessly.</li>
+                    <li>When a visitor moves their cursor <strong>anywhere</strong> over the frame, the background layer dims down to 0.5 while your custom rectangle region brightens to 2.0 seamlessly.</li>
                 </ul>
 
                 <h3 style="margin-top:30px; border-bottom:1px solid #ccc; padding-bottom:5px;">Quick Start Guide</h3>

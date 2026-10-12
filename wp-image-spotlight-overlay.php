@@ -1,8 +1,8 @@
 <?php
 /**
- * Plugin Name: Image Spotlight Overlay Shorthand
+ * Plugin Name: WordPress Image Spotlight Overlay Shorthand
  * Description: High-contrast image focus effect that brightens a custom rectangle and dims the background on hover using a shortcode.
- * Version: 1.4
+ * Version: 1.5
  * Author: AI Assistant
  */
 
@@ -11,7 +11,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // 1. Automatically inject the CSS styles into the site header
-function iso_enqueue_styles() {
+function wpiso_enqueue_styles() {
     ?>
     <style>
     .custom-image-container {
@@ -46,10 +46,10 @@ function iso_enqueue_styles() {
     </style>
     <?php
 }
-add_action( 'wp_head', 'iso_enqueue_styles' );
+add_action( 'wp_head', 'wpiso_enqueue_styles' );
 
 // 2. Create the Shortcode [spotlight_image]
-function iso_render_shortcode( $atts ) {
+function wpiso_render_shortcode( $atts ) {
     $a = shortcode_atts( array(
         'src'    => '',
         'top'    => '30%',
@@ -78,20 +78,20 @@ function iso_render_shortcode( $atts ) {
 
     return $output;
 }
-add_shortcode( 'spotlight_image', 'iso_render_shortcode' );
+add_shortcode( 'spotlight_image', 'wpiso_render_shortcode' );
 
 // 3. FORCE a custom "View details" link to display beneath the plugin name
-function iso_add_view_details_link( $plugin_meta, $plugin_file ) {
-    if ( strpos( $plugin_file, 'image-spotlight-overlay.php' ) !== false ) {
+function wpiso_add_view_details_link( $plugin_meta, $plugin_file ) {
+    if ( strpos( $plugin_file, 'wp-image-spotlight-overlay.php' ) !== false ) {
         $link = '<a href="#TB_inline?width=700&height=550&inlineId=iso-documentation-modal" class="thickbox" aria-label="View details about this plugin">View details</a>';
         $plugin_meta[] = $link;
     }
     return $plugin_meta;
 }
-add_filter( 'plugin_row_meta', 'iso_add_view_details_link', 10, 2 );
+add_filter( 'plugin_row_meta', 'wpiso_add_view_details_link', 10, 2 );
 
 // 4. Inject a highly reliable inline HTML documentation container directly onto the admin page
-function iso_inject_inline_documentation() {
+function wpiso_inject_inline_documentation() {
     $screen = get_current_screen();
     if ( isset( $screen->id ) && $screen->id === 'plugins' ) {
         add_thickbox(); 
@@ -163,4 +163,4 @@ function iso_inject_inline_documentation() {
         <?php
     }
 }
-add_action( 'admin_footer', 'iso_inject_inline_documentation' );
+add_action( 'admin_footer', 'wpiso_inject_inline_documentation' );

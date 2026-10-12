@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Image Spotlight Overlay Shorthand
  * Description: High-contrast image focus effect that brightens a custom rectangle and dims the background on hover using a shortcode.
- * Version: 1.1
+ * Version: 1.2
  * Author: AI Assistant
  */
 
@@ -78,18 +78,37 @@ function iso_render_shortcode( $atts ) {
 }
 add_shortcode( 'spotlight_image', 'iso_render_shortcode' );
 
-// 3. Inject Documentation into the "View details" Modal
+// 3. FORCE a custom "View details" link to display beneath the plugin name
+function iso_add_view_details_link( $plugin_meta, $plugin_file ) {
+    // Target only this exact plugin file path
+    if ( strpos( $plugin_file, 'image-spotlight-overlay.php' ) !== false ) {
+        
+        // Build a secure admin link targeting our custom modal window slug
+        $url = network_admin_url( 'plugin-install.php?tab=plugin-information&plugin=image-spotlight-overlay&TB_iframe=true&width=600&height=550' );
+        
+        // Construct the link with the core WordPress modal class "thickbox"
+        $link = sprintf( 
+            '<a href="%s" class="thickbox open-plugin-details-modal" aria-label="View details about this plugin">%s</a>', 
+            esc_url( $url ), 
+            esc_html__( 'View details' ) 
+        );
+        
+        $plugin_meta[] = $link;
+    }
+    return $plugin_meta;
+}
+add_filter( 'plugin_row_meta', 'iso_add_view_details_link', 10, 2 );
+
+// 4. Inject Documentation data into the modal window when triggered
 function iso_plugin_documentation_tabs( $false, $action, $args ) {
-    // Check if the request is targeting this specific plugin block
     if ( isset( $args->slug ) && $args->slug === 'image-spotlight-overlay' ) {
         
         $obj = new stdClass();
         $obj->name = 'Image Spotlight Overlay Shorthand';
         $obj->slug = 'image-spotlight-overlay';
-        $obj->version = '1.1';
+        $obj->version = '1.2';
         $obj->author = 'AI Assistant';
         
-        // Tab Content Layout
         $obj->sections = array(
             'description' => '
                 <h3>Welcome to Image Spotlight Overlay</h3>
